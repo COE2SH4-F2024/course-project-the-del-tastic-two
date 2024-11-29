@@ -2,7 +2,6 @@
 #include <iostream>
 #include "MacUILib.h"
 #include "objPos.h"
-
 #include "GameMechs.h" 
 #include "Player.h"
 
@@ -27,7 +26,7 @@ int main(void)
 
     Initialize();
 
-    while(myGM -> getExitFlagStatus() == false)  
+    while(!myGM -> getExitFlagStatus()) //while it's not true?
     {
         GetInput();
         RunLogic();
@@ -52,24 +51,12 @@ void Initialize(void)
 
 void GetInput(void)
 {
-
-    if(myGM -> getInput() != 0) //if input isn't null 
+    if(MacUILib_hasChar() != 0)
     {
-        switch(myGM -> getInput())
-        {
-            case ' ':   //exit if space bar is pressed
-            case 27:    //exit if ESC is pressed
-                myGM -> setExitTrue();
-                break;
-
-            //add more cases here for food, score, lose, etc.
-
-            default:
-                break;
-        
-        }
+        char input = MacUILib_getChar();
+        myGM->setInput(input);
     }
-   
+
 }
 
 void RunLogic(void)
@@ -79,6 +66,46 @@ void RunLogic(void)
         //ADD this
 
     //update player speed here too? or in get input? 
+
+    // logic updated:
+    char input = myGM->getInput();
+    MacUILib_printf("Debug: Input received '%c' (%d)\n", input, input);
+    
+    if(input != 0) //if input isn't null 
+    {
+        switch(input)
+        {
+            case ' ':   // Exit if space bar is pressed
+            case 27:    // Exit if ESC is pressed
+                myGM -> setExitTrue();
+                MacUILib_printf("Debug: Exit triggered\n");
+                break;
+
+            case 'p':
+                MacUILib_printf("Debug: The score is: %d\n", myGM->getScore());
+                break; //don't think this is working
+
+            //these don't work either 
+            case 43: // '+'
+                myGM -> increaseSpeed();
+                MacUILib_printf("Player speed increased\n");
+                    //update print statement later
+                break;
+            case 45: // '-'
+                myGM -> decreaseSpeed();
+                MacUILib_printf("Player speed decreased\n");
+                break;
+
+
+            //add more cases here for food, score, lose, etc.
+
+            default:
+                break;
+        
+        }
+        // Clear input after processing
+        myGM->clearInput();
+    }
 }
 
 void DrawScreen(void)
@@ -133,6 +160,7 @@ void DrawScreen(void)
 
     int playerX = myPlayer->getPlayerPos().pos->x;
     int playerY = myPlayer->getPlayerPos().pos->y;
+    char playerSymbol = myPlayer->getPlayerPos().symbol;
 
     // BASIC RUNNING FRAME:
 
@@ -149,7 +177,7 @@ void DrawScreen(void)
             // if the postion is the same as the current player position, print the player symbol 
             else if (i == playerY && j == playerX)
             {
-                MacUILib_printf("%c", myPlayer->getPlayerPos().symbol);
+                MacUILib_printf("%c", playerSymbol);
                 //runs but doesn't display anything
             }
             else
@@ -161,9 +189,8 @@ void DrawScreen(void)
     }
 
 
-    // print statements 
+    // Debug: Print player postion 
     objPos playerPos = myPlayer -> getPlayerPos();
-
     MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
 
 }

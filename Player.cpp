@@ -1,5 +1,6 @@
 #include "Player.h"
-
+#include "MacUILib.h"
+#include "objPos.h"
 
 Player::Player(GameMechs* thisGMRef)
 {
@@ -7,9 +8,10 @@ Player::Player(GameMechs* thisGMRef)
     playerDir = STOP;
 
     // more actions to be included
+
     playerPos.pos->x = mainGameMechsRef -> getBoardSizeX() / 2;
     playerPos.pos->y = mainGameMechsRef -> getBoardSizeY() /2;
-    playerPos.symbol = '@';
+    playerPos.symbol = '@'; // Initialize symbol
 }
 
 
@@ -23,7 +25,9 @@ Player::~Player()
 objPos Player::getPlayerPos() const
 {
     // return the reference to the playerPos arrray list
+    
     return playerPos; 
+
     //return the object playerPos type through value (check or delete comment)
     //only can do this if you've implemented the rule of four
 }
@@ -32,6 +36,9 @@ void Player::updatePlayerDir()
 {
   
     char input = mainGameMechsRef -> getInput();
+    
+    // Debug:
+    MacUILib_printf("Debug: Input received: %c\n", input); 
     
     // PPA3 input processing logic    
     
@@ -71,7 +78,8 @@ void Player::updatePlayerDir()
 
             default:
                 break;
-        }       
+        }      
+    MacUILib_printf("Debug: Updated Direction: %d\n", playerDir); 
 }
 
 void Player::movePlayer()
@@ -105,6 +113,8 @@ void Player::movePlayer()
     if (playerPos.pos->x > (board_X - 1)) playerPos.pos->x = 0;
     if (playerPos.pos->y < 0) playerPos.pos->y = (board_Y -1);     // Wrap vertically
     if (playerPos.pos->y > (board_X - 1)) playerPos.pos->y = 0;
+
+    MacUILib_printf("Debug: New Player Position: [x: %d, y: %d]\n", playerPos.pos->x, playerPos.pos->y);
 
 }
 

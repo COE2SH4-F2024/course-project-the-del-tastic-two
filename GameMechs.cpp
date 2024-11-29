@@ -14,6 +14,10 @@ GameMechs::GameMechs()
     minSpeed = 1; 
     playerSpeed = 3;
 
+    //ignore for now:
+    itemList = nullptr;
+    itemCount = 0;
+
 }
 
 GameMechs::GameMechs(int boardX, int boardY)
@@ -43,7 +47,9 @@ GameMechs::~GameMechs()
     // nothing on the heap
     // destructor can stay empty for now!
 
+    //ignore only for the gen function
     delete[] this->itemList;
+    delete[] itemList;
     //redo to delete contents of list on the heap also
 }
 
@@ -60,10 +66,12 @@ bool GameMechs::getLoseFlagStatus() const
 
 char GameMechs::getInput()
 {
-    if(MacUILib_hasChar() != 0)
-    {
-        input = MacUILib_getChar();
-    }
+    // if(MacUILib_hasChar() != 0)
+    // {
+    //     input = MacUILib_getChar();
+    // }
+
+    return input; // CHECK IF THIS IS RIGHT
 }
 
 int GameMechs::getScore() const
@@ -74,7 +82,6 @@ int GameMechs::getScore() const
 void GameMechs::incrementScore()
 {
     score++;
-    clearInput(); //check this
     //potentially increase by more than one if special char reached?
     //if _(char = some specific char)_ then score += 5 or something
 }
@@ -109,7 +116,7 @@ void GameMechs::setInput(char this_input)
 
 void GameMechs::clearInput()
 {
-    input = '\0';
+    input = 0;
     //reset the input to null
 }
 

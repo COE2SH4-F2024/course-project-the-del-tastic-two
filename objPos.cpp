@@ -37,7 +37,8 @@ objPos::objPos( const objPos &obj)
     this->symbol = obj.symbol;
     // CHECK IF 'THIS->' IS NECESSARY
     
-    cout << "Copy Contructor in objPos reached" << endl; //check if reached 
+    //cout << "Copy Contructor in objPos reached" << endl; 
+    //check if reached 
 }
 
 // Copy Assignment Operator 
@@ -72,7 +73,7 @@ objPos::~objPos()
     // do we need to delete anything else???
 }
 
-// end of my work 
+// end of my work for rule of six/min four 
 
 void objPos::setObjPos(objPos o)
 {
