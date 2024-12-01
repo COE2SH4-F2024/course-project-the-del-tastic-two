@@ -47,152 +47,202 @@ void Initialize(void)
     myGM = new GameMechs();
     myPlayer = new Player(myGM);
 
+    //seed random generation (need later)
+    //srand(time(0));
 }
 
 void GetInput(void)
 {
-    if(MacUILib_hasChar() != 0)
-    {
-        char input = MacUILib_getChar();
-        myGM->setInput(input);
-    }
+    // if(MacUILib_hasChar() != 0)
+    // {
+    //     char input = MacUILib_getChar();
+    //     MacUILib_printf("Debug: Input recieved in getInput: %c", input);
+    //     myGM->setInput(input);
+    // }
+
+    //change later to, if this doesn't work 
+    myGM -> getAsyncInput();
+
+    // TO TEST, DOESN'T WORK 
+    //char input = myGM -> getAsyncInput(); // assuming this method reads input asynchronously
+
+    // if (input != 0) {
+    //     // Set the input for game mechanics to process
+    //     myGM->setInput(input);  // This could be used in any part of the game logic
+
+    //     // Update the player's direction based on the input
+    //     myPlayer->updatePlayerDir();  // Update player direction based on the input
+
+    //     // Handle other game logic, like quitting or special keys
+    //     if (input == ' ' || input == 27) {  // Space or ESC for exit
+    //         myGM->setExitTrue();
+    //     }
+    // }
 
 }
 
 void RunLogic(void)
 {
-    myPlayer -> updatePlayerDir();  //update player direction 
-    myPlayer -> movePlayer();       //update player movement 
-        //ADD this
+    char input = myGM->getInput();
+    MacUILib_printf("Debug: Input in RunLogic: %c", input);
+
+    myPlayer->updatePlayerDir();
+    myPlayer->movePlayer(); 
+
+    
+    // Adjust player speed
+    //these still aren't working, but can ignore for now
+    // if (input == '+') {
+    //     myGM->increaseSpeed();
+    //     MacUILib_printf("Debug: Player speed increased to %d.\n", myGM->getPlayerSpeed());
+    // } else if (input == '-') {
+    //     myGM->decreaseSpeed();
+    //     MacUILib_printf("Debug: Player speed decreased to %d.\n", myGM->getPlayerSpeed());
+    // }
+    
+    //myGM -> clearInput(); //DO I NEED THIS HERE OR IN DRAW
 
     //update player speed here too? or in get input? 
 
     // logic updated:
-    char input = myGM->getInput();
-    MacUILib_printf("Debug: Input received '%c' (%d)\n", input, input);
+    // MacUILib_printf("Debug: Input received '%c' (%d)\n", input, input);
     
-    if(input != 0) //if input isn't null 
-    {
-        switch(input)
-        {
-            case ' ':   // Exit if space bar is pressed
-            case 27:    // Exit if ESC is pressed
-                myGM -> setExitTrue();
-                MacUILib_printf("Debug: Exit triggered\n");
-                break;
+    // if(input != 0) //if input isn't null 
+    // {
+    //     switch(input)
+    //     {
+    //         case ' ':   // Exit if space bar is pressed
+    //         case 27:    // Exit if ESC is pressed
+    //             myGM -> setExitTrue();
+    //             MacUILib_printf("Debug: Exit triggered\n");
+    //             break;
 
-            case 'p':
-                MacUILib_printf("Debug: The score is: %d\n", myGM->getScore());
-                break; //don't think this is working
+    //         case 'p':
+    //             MacUILib_printf("Debug: The score is: %d\n", myGM->getScore());
+    //             break; //don't think this is working
 
-            //these don't work either 
-            case 43: // '+'
-                myGM -> increaseSpeed();
-                MacUILib_printf("Player speed increased\n");
-                    //update print statement later
-                break;
-            case 45: // '-'
-                myGM -> decreaseSpeed();
-                MacUILib_printf("Player speed decreased\n");
-                break;
+    //         //these don't work either 
+    //         case 43: // '+'
+    //             myGM -> increaseSpeed();
+    //             MacUILib_printf("Player speed increased\n");
+    //                 //update print statement later
+    //             break;
+    //         case 45: // '-'
+    //             myGM -> decreaseSpeed();
+    //             MacUILib_printf("Player speed decreased\n");
+    //             break;
 
 
-            //add more cases here for food, score, lose, etc.
+    //         //add more cases here for food, score, lose, etc.
 
-            default:
-                break;
+    //         default:
+    //             break;
         
-        }
-        // Clear input after processing
-        myGM->clearInput();
-    }
+    //     }
+    //     // Clear input after processing
+    //     myGM->clearInput();
+    // }
 }
 
 void DrawScreen(void)
 {
     MacUILib_clearScreen();    
 
-    // draw screen 
+    // GET BOARDSIZE
+    int boardX = myGM -> getBoardSizeX();
+    int boardY = myGM -> getBoardSizeY();
+    
+    // GET SCORE
+    int score = myGM -> getScore();
 
-    // ATTEMPT 1 
+    // GET PLAYER X and Y HERE
+    objPos playerPos = myPlayer->getPlayerPos();
 
-    // for(int i=0; i < (myGM -> getBoardSizeX()); i++) //for less than the amount of rows, 0-9 rows
+    int playerx = playerPos.pos -> x;
+    int playery = playerPos.pos -> y;
+    // int playerX = myPlayer->getPlayerPos().pos->x;
+    // int playerY = myPlayer->getPlayerPos().pos->y;
+
+    // GET SYMBOL
+    //char playerSymbol = myPlayer->getPlayerPos().symbol;
+
+    // BASIC RUNNING FRAME: MINE
+    // for(int i=0; i < boardX; i++) //for 1 less than the amount of ROWS
     // {
-    //     for(int j=0; j < (myGM -> getBoardSizeY()); j++) //for less than the amount of coloumns, 0-19 columns
+    //     for(int j=0; j < boardY; j++) //for 1 less than the amount of COLUMNS
     //     {
     //         //print '#' if in the first or last row, 0 or 9
     //         //print '#' if in the first or last column, 0 or 19
-    //         if(i == 0 || i == ((myGM -> getBoardSizeX()) -1) || j == 0 || j == ((myGM -> getBoardSizeY()) -1))
+    //         if(i == 0 || i == (boardX -1) || j == 0 || j == (boardY -1))
     //         {
     //             MacUILib_printf("#");
     //         }
     //         // if the postion is the same as the current player position, print the player symbol 
-    //         // else if(i == player.y && j == player.x)
-    //         // {
-    //         //     MacUILib_printf("%c", player.symbol);
-    //         // }
 
-    //         // Print a few randomly generated items on the board too
+    //         else if(i == playerx && j == playery)
+    //         {
+    //             MacUILib_printf("%c", playerPos.symbol); // Place player's symbol on the board
+    //             MacUILib_printf("A"); //test
+    //         } 
+
     //         else
     //         {
-    //             int printedItem = 0; //tracking flag for if printed an item at this postion
-    //             int k;
-    //             for(k =0; k< 5; k++) //for looping through items in array
-    //             {
-    //                 if(myGM -> getItemList()[k].pos -> x == j && myGM -> getItemList()[k].pos -> y == i)  // If an item is at position (j, i)
-    //                 {
-    //                     MacUILib_printf("%c", myGM -> getItemList()[k].symbol); //print item
-    //                     printedItem = 1; //change flag to true to show it's been printed
-    //                 }
-    //             }
-
-    //             //if no random char was printed
-    //             if(printedItem != 1)
-    //             {
-    //                 MacUILib_printf(" ");
-    //             }
+    //             MacUILib_printf(" ");
     //         }
     //     }
     //     MacUILib_printf("\n"); //move to next line
     // }
 
-    // GET PLAYER X and Y HERE
-
-    int playerX = myPlayer->getPlayerPos().pos->x;
-    int playerY = myPlayer->getPlayerPos().pos->y;
-    char playerSymbol = myPlayer->getPlayerPos().symbol;
-
-    // BASIC RUNNING FRAME:
-
-    for(int i=0; i < (myGM -> getBoardSizeX()); i++) //for less than the amount of rows, 0-9 rows
+    // TEST TO WORK FRAME AND PRINT:
+    for (int i = 0; i < boardY; i++)
     {
-        for(int j=0; j < (myGM -> getBoardSizeY()); j++) //for less than the amount of coloumns, 0-19 columns
+        for (int j = 0; j < boardX; j++)
         {
-            //print '#' if in the first or last row, 0 or 9
-            //print '#' if in the first or last column, 0 or 19
-            if(i == 0 || i == ((myGM -> getBoardSizeX()) -1) || j == 0 || j == ((myGM -> getBoardSizeY()) -1))
-            {
+            if (i == 0 || i == (boardY - 1))
+            { 
+                // Top/Bottom borders
                 MacUILib_printf("#");
-            }
-            // if the postion is the same as the current player position, print the player symbol 
-            else if (i == playerY && j == playerX)
+            } 
+            else if (j == 0 || j == (boardX - 1))
+            { 
+                // Side borders
+                MacUILib_printf("#");
+            } 
+            else if(i == playery && j == playerx)
             {
-                MacUILib_printf("%c", playerSymbol);
-                //runs but doesn't display anything
-            }
+                // Print Player symbol on board
+                MacUILib_printf("%c", playerPos.symbol); 
+            } 
             else
             {
                 MacUILib_printf(" ");
             }
         }
-        MacUILib_printf("\n"); //move to next line
+        MacUILib_printf("%c",'\n');
     }
 
+    if(myGM -> getInput() == 't')
+    {
+        myGM-> incrementScore();
+        MacUILib_printf("The score is: %d\n", score);
+    }
+
+    // need to check if score increments 
+    // need to check if it matches ppas 
+
+    // PRINT STATEMENTS FOR GAME PLAY
+    MacUILib_printf("Press the escape key or space bar to quit.\n Use WASD to move.\n");
+    MacUILib_printf("Score: %d\n", score);
 
     // Debug: Print player postion 
-    objPos playerPos = myPlayer -> getPlayerPos();
+    //objPos playerPos = myPlayer -> getPlayerPos();
     MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
 
+    if(myGM -> getExitFlagStatus() == true)
+    {
+        MacUILib_clearScreen();
+        MacUILib_printf("The Game is Forcefully Exited\n");
+    }
 }
 
 void LoopDelay(void)
@@ -203,7 +253,17 @@ void LoopDelay(void)
 
 void CleanUp(void)
 {
-    MacUILib_clearScreen();    
+    MacUILib_clearScreen();   
+    
+    if(myGM -> getLoseFlagStatus() == true)
+    {
+        MacUILib_printf("\n Thanks for playing!\n");
+        MacUILib_printf("Final score was: %d\n", myGM -> getScore());
+    }
+    else 
+    {
+        MacUILib_printf("You've exited the game!\n");
+    }
 
     delete myPlayer; 
     delete myGM;

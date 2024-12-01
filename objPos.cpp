@@ -1,10 +1,11 @@
 #include "objPos.h"
+
 #include <iostream> 
 using namespace std; //do i need this 
 
 objPos::objPos()
 {
-    pos = new Pos;
+    pos = new Pos; // Allocate memory for position
     pos->x = 0;
     pos->y = 0;
     symbol = 0; //NULL
@@ -31,12 +32,16 @@ objPos::objPos( const objPos &obj)
 {
     //do a deep copy here 
 
-    this->pos = new Pos;
-    this->pos->x = obj.pos->x;
-    this->pos->y = obj.pos->y;
-    this->symbol = obj.symbol;
-    // CHECK IF 'THIS->' IS NECESSARY
+    // this->pos = new Pos;
+    // this->pos->x = obj.pos->x;
+    // this->pos->y = obj.pos->y;
+    // this->symbol = obj.symbol;
     
+    pos = new Pos;      //allocated memory
+    pos->x = obj.pos->x;
+    pos->y = obj.pos->y;
+    symbol = obj.symbol;
+
     //cout << "Copy Contructor in objPos reached" << endl; 
     //check if reached 
 }
@@ -44,23 +49,28 @@ objPos::objPos( const objPos &obj)
 // Copy Assignment Operator 
 objPos& objPos::operator=(const objPos &other)
 {
-    //do deep copy 
-    // 'this->'
-    if (this == &other)
-    {
-        return *this;   //self check to avoid unnecessary work 
-    }
+    // if (this == &other) // Self-assignment check
+    // {
+    //     return *this; // Avoid unnecessary work
+    // }
 
-    delete this-> pos;
+    // if (pos != nullptr) 
+    //     delete pos; // Free existing memory if allocated
 
-    //allocate new resources and copy data from others 
-    pos = new Pos(*other.pos); 
-    symbol = other.symbol; // CHECK IF THESE TWO ARE DEEP COPIED
-        //should this be lie refPos or something?
-
+    // // Allocate new resources and copy data from `other`
+    // pos = new Pos(*other.pos); // Use copy constructor of `Pos`
+    // symbol = other.symbol; // Directly copy the symbol field
     cout << "copy assignment operator reached" << endl;
-    //not reached 
 
+
+    if(this != &other)
+    {
+        pos = new Pos;
+        pos->x = other.pos->x;
+        pos->y = other.pos->y;
+        symbol = other.symbol;
+        // check if this new version works
+    }
     return *this;
 }
 

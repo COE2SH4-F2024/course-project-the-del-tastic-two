@@ -28,6 +28,7 @@ class objPos
 
         objPos( const objPos &obj);             //copy constructor
         objPos& operator=(const objPos& other); //copy assignment operator 
+        //objPos operator=(const objPos& other);  //copy assignment operator 
         ~objPos();                              //destrucor
 
         void setObjPos(objPos o);        

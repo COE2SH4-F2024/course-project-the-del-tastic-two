@@ -7,7 +7,6 @@
 #include "objPos.h"
 #include "objPosArrayList.h"
 
-
 using namespace std;
 
 class GameMechs
@@ -57,13 +56,17 @@ class GameMechs
         
         // More methods should be added here
 
-        //Change the speed
-        int getMaxSpeed() const;
-        int getMinSpeed() const;
-        int getPlayerSpeed() const;
+        int getAsyncInput();
+        void generateFood();
 
-        void increaseSpeed();
-        void decreaseSpeed();
+        //Change the speed
+        // int getMaxSpeed() const;
+        // int getMinSpeed() const;
+        // int getPlayerSpeed() const;
+
+        // void increaseSpeed();
+        // void decreaseSpeed();
+
 
 
         // ATTEMPT TO GEN; OTHERWISE IGNORE: 
@@ -71,12 +74,12 @@ class GameMechs
         //void generateItems(const char* goalString, int listSize); 
         // Generate random items
 
-        // Getter functions to access private members
-        objPos* getItemList() const;
-        int getItemCount() const;
+        // // Getter functions to access private members
+        // objPos* getItemList() const;
+        // int getItemCount() const;
 
-        //try generate:
-        void GenerateItems(struct objPos list[], const int listSize, const struct objPos *playerPos, const int xRange, const int yRange, const char* str);
+        // //try generate:
+        // void GenerateItems(struct objPos list[], const int listSize, const struct objPos *playerPos, const int xRange, const int yRange, const char* str);
 
 };
 
