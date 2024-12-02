@@ -130,14 +130,12 @@ void GameMechs::getAsyncInput()
 
 void GameMechs::generateFood(objPos blockOff)
 {
-    // use ppa3
-
     // You only need to block off the layer position FOR NOW
     // Easier for now, but will need to be upgraded in iteration 3
     // Because you need to account for the snake, 
         //so multiple spots in the board
 
-    // Seed the random generator 
+    // Seed random generator 
     srand(time(NULL));
 
     // Keep generating until get a valid position
@@ -147,21 +145,19 @@ void GameMechs::generateFood(objPos blockOff)
         int xCandidate = (rand() % (boardSizeX - 2)) + 1; // From 1 to boardSizeX - 2
         int yCandidate = (rand() % (boardSizeY - 2)) + 1; // From 1 to boardSizeY - 2
 
-        // Check that the candidate does not overlap the blocked position
+        // Check if generated postion is same as player position
         if (xCandidate == blockOff.pos->x && yCandidate == blockOff.pos->y)
         {
-            continue; // Skip this candidate and try again
+            continue; // If yes, skip this postion and try again
         }
 
         // Set the food's position and symbol
         food.pos->x = xCandidate;
         food.pos->y = yCandidate;
-        food.symbol = 'o'; // Set your desired symbol for food
+        food.symbol = 'o'; // Chosen symbol for food
 
-        // Debug output (optional)
-        MacUILib_printf("Food generated at: [%d, %d] with symbol: %c\n", food.pos->x, food.pos->y, food.symbol);
-        MacUILib_printf("Debug: New food position: [%d, %d]\n", food.pos->x, food.pos->y);
-        // Break out of the loop as we have successfully generated a valid food position
+        // DO I NEED TO RANDOMLY GENERATE THE SYMBOL AS WELL??
+
         break;
     }
 }

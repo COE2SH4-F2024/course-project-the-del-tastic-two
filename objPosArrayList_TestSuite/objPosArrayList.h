@@ -17,6 +17,9 @@ class objPosArrayList
         ~objPosArrayList(); // Destructor
 
         //bad idea to copy entire array list, pass by ref instead i think 
+        //if we do here:
+        objPosArrayList(const objPosArrayList &sList);            // copy constructor
+        objPosArrayList& operator=(const objPosArrayList &sList); // copy assignment operator
 
         //refer to the demo intArrayList
         //should be VERY throughough and 100 right, or will cause a lot of problems
