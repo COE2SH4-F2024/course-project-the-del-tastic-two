@@ -12,12 +12,10 @@ GameMechs::GameMechs()
     loseFlag = false;
     score = 0;
 
-    // boardSizeX = 10;
-    // boardSizeY = 20;
+    boardSizeX = 30;
+    boardSizeY = 15;
 
-    boardSizeX = 20;
-    boardSizeY = 10;
-
+    //ignore these also
     maxSpeed = 5;
     minSpeed = 1; 
     playerSpeed = 3;

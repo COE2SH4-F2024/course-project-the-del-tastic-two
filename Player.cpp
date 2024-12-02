@@ -10,6 +10,8 @@ Player::Player(GameMechs* thisGMRef)
 
     // more actions to be included
 
+    //currentSpeed = 100000;
+
     playerPos.pos = new Pos(); // DELETE 
 
     playerPos.pos->x = (mainGameMechsRef -> getBoardSizeX() / 2);
@@ -39,62 +41,86 @@ objPos Player::getPlayerPos() const
 
 void Player::updatePlayerDir()
 {
-  
-    char input = mainGameMechsRef -> getInput();
-    
-    // Debug:
-    MacUILib_printf("Debug: Input in updatePlayerDir: %c\n", input); 
+    // PPA3 input processing logic
 
-    // PPA3 input processing logic    
-
-    if(mainGameMechsRef -> getInput() != 0) //if not null char
+    if(mainGameMechsRef->getInput() != 0)  // if not null character
     {
-        switch(input)
-            {  
-                case 'W': // UP
-                case 'w':
-                    if(playerDir == LEFT || playerDir == RIGHT) 
-                    {
-                        playerDir = UP;   
-                    }
-                    break;
+        //MacUILib_printf("Input received: %c\n", mainGameMechsRef->getInput());
+        switch(mainGameMechsRef->getInput())
+        {                      
+            case ' ':   // Exit if space bar is pressed
+            case 27:    // Exit if ESC is pressed
+                mainGameMechsRef->setExitTrue();
+                break;
+            case 'w': case 'W': // UP
+                if(playerDir != DOWN && playerDir != UP)
+                {
+                    playerDir = UP;
+                }
+                break;
+            case 'a': case 'A': // LEFT
+                if(playerDir != RIGHT && playerDir != LEFT)
+                {
+                    playerDir = LEFT;
+                }
+                break;
+            case 's': case 'S': // DOWN
+                if(playerDir != UP && playerDir != DOWN)
+                {
+                    playerDir = DOWN;
+                }
+                break;
+            case 'd': case 'D': // RIGHT
+                if(playerDir != LEFT && playerDir != RIGHT)
+                {
+                    playerDir = RIGHT;
+                }
+                break;
 
-                case 'A': // LEFT
-                case 'a':
-                    if(playerDir == UP || playerDir == DOWN) 
-                    {
-                        playerDir = LEFT;     
-                    }
-                    break;
-            
-                case 'S': // DOWN 
-                case 's':
-                    if(playerDir == LEFT || playerDir == RIGHT) 
-                    {
-                        playerDir = DOWN; 
-                    }
-                    break;
-
-                case 'D': // RIGHT
-                case 'd':
-                    if(playerDir == UP || playerDir == DOWN) 
-                    {
-                        playerDir = RIGHT;     
-                    }
-                    break;
-            // EXIT
-            //keep this HERE or not??
-                case ' ':   // Exit if space bar is pressed
-                case 27:    // Exit if ESC is pressed
-                    mainGameMechsRef -> setExitTrue();
-                    break;
-
-                default:
-                    break;
-        }    
+            default:
+                break;
+        }
         mainGameMechsRef->clearInput();
     }
 }
+
+//player speed 
+// int Player::playerSpeed()
+// {
+    
+//     if(mainGameMechsRef->getInput() != 0)  // if not null character
+//     {
+//         switch(mainGameMechsRef->getInput())
+//         {                      
+//             //player speed controller 
+//             case '1':
+//                 currentSpeed = 1000000;
+//                 //outputSpeed = "Very Slow";
+//                 break;
+//             case '2':
+//                 currentSpeed = 500000;
+//                 //outputSpeed = "Slow";
+//                 break;
+//             case '3':
+//                 currentSpeed = 100000;
+//                 //outputSpeed = "Regular";
+//                 break;
+//             case '4':
+//                 currentSpeed = 10000;
+//                 //outputSpeed = "Fast";
+//                 break;
+//             case '5':
+//                 currentSpeed = 2500;
+//                 //outputSpeed = "Very Fast";
+//                 break;
+
+//             default:
+//                 break;
+//         }
+//         mainGameMechsRef->clearInput();
+//     }
+// }
+
 
 void Player::movePlayer()
 {
@@ -129,7 +155,7 @@ void Player::movePlayer()
     if (playerPos.pos->y < 0) playerPos.pos->y = (board_Y -1);     // Wrap vertically
     if (playerPos.pos->y > (board_Y - 1)) playerPos.pos->y = 0;
     
-    MacUILib_printf("Debug: New Player Position: [x: %d, y: %d]\n", playerPos.pos->x, playerPos.pos->y);
+    //MacUILib_printf("Debug: New Player Position: [x: %d, y: %d]\n", playerPos.pos->x, playerPos.pos->y);
 
 }
 

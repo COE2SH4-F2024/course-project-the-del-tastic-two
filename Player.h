@@ -25,9 +25,9 @@ class Player
         void movePlayer();
 
         // More methods to be added here
-        
-        //Dir getDir();
-        //Dir setDir();
+
+        //int currentSpeed;
+        //int playerSpeed();
 
     private:
         objPos playerPos; // Upgrade this in iteration 3.       
