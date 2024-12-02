@@ -23,13 +23,10 @@ class GameMechs
         objPos food;
         objPos player; //added 
 
+        //potentially delete, not important currently:
         int minSpeed;
         int maxSpeed; 
         int playerSpeed;  //for current speed
-
-        //potentially delete these:
-        objPos* itemList;  // Array to hold the generated items
-        int itemCount;     // Number of items generated
     
     public:
         GameMechs();
@@ -56,8 +53,17 @@ class GameMechs
         
         // More methods should be added here
 
-        int getAsyncInput();
-        void generateFood();
+        void getAsyncInput();
+        //void generateFood();
+
+        // Method 1 (above and beyond approach NOT taken)
+
+        void generateFood(objPos blockOff);
+        //don't want to create food where player object is
+
+        objPos getFoodPos() const;  //getter
+                                    //will return objPos type
+
 
         //Change the speed
         // int getMaxSpeed() const;
@@ -66,20 +72,6 @@ class GameMechs
 
         // void increaseSpeed();
         // void decreaseSpeed();
-
-
-
-        // ATTEMPT TO GEN; OTHERWISE IGNORE: 
-        //should i be doing the draw screen stuff here????
-        //void generateItems(const char* goalString, int listSize); 
-        // Generate random items
-
-        // // Getter functions to access private members
-        // objPos* getItemList() const;
-        // int getItemCount() const;
-
-        // //try generate:
-        // void GenerateItems(struct objPos list[], const int listSize, const struct objPos *playerPos, const int xRange, const int yRange, const char* str);
 
 };
 

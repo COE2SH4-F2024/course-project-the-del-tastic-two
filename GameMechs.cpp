@@ -15,14 +15,15 @@ GameMechs::GameMechs()
     boardSizeX = 30;
     boardSizeY = 15;
 
+    food.pos = new Pos(); // In GameMechs constructor
+
+    food.setObjPos(-10, -10, 'o'); 
+        //initialize food object outside of the game board 
+
     //ignore these also
     maxSpeed = 5;
     minSpeed = 1; 
     playerSpeed = 3;
-
-    //ignore for now:
-    // itemList = nullptr;
-    // itemCount = 0;
 
 }
 
@@ -34,17 +35,6 @@ GameMechs::GameMechs(int boardX, int boardY)
     score = 0;
     boardSizeX = boardX;
     boardSizeY = boardY;
-
-
-    // //for random gen:
-    // // Initialize the board size
-    // this->boardSizeX = boardX;
-    // this->boardSizeY = boardY;
-
-    // // Initialize the item list to store generated items
-    // this->itemList = new objPos[boardX * boardY];  // Adjust this size as needed
-    // this->itemCount = 0;  // Initially, no items are generated
-
 }
 
 // do you need a destructor?
@@ -53,10 +43,8 @@ GameMechs::~GameMechs()
     // nothing on the heap
     // destructor can stay empty for now!
 
-    //ignore only for the gen function
-    // delete[] this->itemList;
-    // delete[] itemList;
-    //redo to delete contents of list on the heap also
+    delete food.pos;
+
 }
 
 // should i be doing a copy constructor and a copy assignment operator?
@@ -124,22 +112,77 @@ void GameMechs::clearInput()
 
 // More methods should be added here
 
-//try for input, reference input in project.cpp if still a problem
-int GameMechs::getAsyncInput()
-{
-    if(MacUILib_hasChar())
+void GameMechs::getAsyncInput()
+{   
+    if(MacUILib_hasChar() != 0)
     {
         input = MacUILib_getChar();
-        return input;
+    }
+    //don't know what happened here tbh
+    // if(input == '\0')
+    // {
+    //     setExitTrue();
+    // }
+
+}
+
+// FOOD GENERATION
+
+void GameMechs::generateFood(objPos blockOff)
+{
+    // use ppa3
+
+    // You only need to block off the layer position FOR NOW
+    // Easier for now, but will need to be upgraded in iteration 3
+    // Because you need to account for the snake, 
+        //so multiple spots in the board
+
+    // Seed the random generator 
+    srand(time(NULL));
+
+    // Keep generating until get a valid position
+    while (true)
+    {
+        // Generate random x and y within the valid range (excluding borders)
+        int xCandidate = (rand() % (boardSizeX - 2)) + 1; // From 1 to boardSizeX - 2
+        int yCandidate = (rand() % (boardSizeY - 2)) + 1; // From 1 to boardSizeY - 2
+
+        // Check that the candidate does not overlap the blocked position
+        if (xCandidate == blockOff.pos->x && yCandidate == blockOff.pos->y)
+        {
+            continue; // Skip this candidate and try again
+        }
+
+        // Set the food's position and symbol
+        food.pos->x = xCandidate;
+        food.pos->y = yCandidate;
+        food.symbol = 'o'; // Set your desired symbol for food
+
+        // Debug output (optional)
+        MacUILib_printf("Food generated at: [%d, %d] with symbol: %c\n", food.pos->x, food.pos->y, food.symbol);
+        MacUILib_printf("Debug: New food position: [%d, %d]\n", food.pos->x, food.pos->y);
+        // Break out of the loop as we have successfully generated a valid food position
+        break;
     }
 }
 
-void GameMechs::generateFood()
+objPos GameMechs::getFoodPos() const
 {
-    food.pos -> x = rand() % (boardSizeX -2) + 1;
-    food.pos -> y = rand() % (boardSizeY -2) + 1;
-    food.symbol = '*';
-}
+    return food;
+} 
+
+
+// __________________________________________________
+
+
+
+// FOR ATTEMPT INITIAL, OTHERWISE IGNORE
+// void GameMechs::generateFood()
+// {
+//     food.pos -> x = rand() % (boardSizeX -2) + 1;
+//     food.pos -> y = rand() % (boardSizeY -2) + 1;
+//     food.symbol = '*';
+// }
 
 
 
@@ -175,79 +218,4 @@ void GameMechs::generateFood()
 //         playerSpeed--;
 //         MacUILib_printf("Player Speed was increased to: %d", playerSpeed);
 //     }
-// }
-
-
-
-
-
-
-// // this is mine, but geniunely think it's so wrong oml
-
-
-// objPos* GameMechs::getItemList() const 
-// {
-//     return itemList;  // Return the pointer to the array of items
-// }
-
-// // Getter function to access the itemCount
-// int GameMechs::getItemCount() const 
-// {
-//     return itemCount;  // Return the number of items generated
-// }
-
-// //try 2:
-// void GameMechs::GenerateItems(struct objPos list[], const int listSize, const struct objPos *playerPos, const int xRange, const int yRange, const char* str)
-// {
-
-//     int count = 0;
-//     int strLength = 0;
-
-//     while (str[strLength] != '\0')
-//     {
-//         strLength++;
-//     }
-
-//     int usedPostions[20][10] = {0};
-//     srand(time(NULL));
-//     int usedSymbols[128] = {0};
-
-//     // Generate random items
-//     while(count < listSize)
-//     {
-//         int xCandidate = (rand() % (xRange -1)) + 1; 
-//         int yCandidate = (rand() % (yRange -1)) + 1; 
-
-//         // Check for collision with player's position
-//        if (xCandidate == playerPos->pos->x && yCandidate == playerPos->pos->y)  
-//         {
-//             continue; // Skip if it collides with player positon
-//         }
-//         if (usedPostions[xCandidate][yCandidate] == 1) 
-//         {
-//             continue; // Skip if postion already used
-//         }
-        
-//         // Generate a random char from goal string
-//         int indexCan = rand() % strLength;       //rand index to choose from
-//         char symbolCandidate = str[indexCan];
-
-//         if (symbolCandidate < 0 || symbolCandidate >= 128 || usedSymbols[symbolCandidate]) 
-//         {
-//             continue; // Skip if the symbol is out of ASCII range or already used
-//         }
-
-//             //update the list with the generated values 
-//             list[count].pos -> x = xCandidate;
-//             list[count].pos -> y = yCandidate; 
-//             list[count].symbol = symbolCandidate;
-
-//             //update used postions and symbols
-//             usedPostions[xCandidate][yCandidate] = 1;
-//             usedSymbols[symbolCandidate] = 1;
-
-//             count++; 
-//             //update count, for successfulled added item
-//     }
-//     itemCount = count;
 // }

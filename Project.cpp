@@ -10,7 +10,8 @@ using namespace std;
 #define DELAY_CONST 100000
 
 Player *myPlayer; //Global pointer meant to instantiate a player object on the heap
-GameMechs *myGM; 
+GameMechs *myGM; // Container class (on the heap)
+
 
 void Initialize(void);
 void GetInput(void);
@@ -26,6 +27,7 @@ int main(void)
 
     Initialize();
 
+    //while(myGM -> getExitFlagStatus() == false) //ignore
     while(!myGM -> getExitFlagStatus()) //while it's not true
     {
         GetInput();
@@ -47,23 +49,25 @@ void Initialize(void)
     myGM = new GameMechs();
     myPlayer = new Player(myGM);
 
-    //seed random generation (need later)
-    //srand(time(0));
+    // first call the foodGeneration function to initially populate it
+    myGM->generateFood(myPlayer->getPlayerPos());
+    //should i be doing this as, it sets it to a random position,
+        //but it doesn't start off screen? 
+        //should it be tooggled by a button??
+
 }
 
 void GetInput(void)
 {
-    //delete this
-    // if(MacUILib_hasChar() != 0)
-    // {
-    //     char input = MacUILib_getChar();
-    //     MacUILib_printf("Debug: Input recieved in getInput: %c", input);
-    //     myGM->setInput(input);
-    // }
-
-    //change later to, if this doesn't work 
     myGM -> getAsyncInput();
 
+    // works !
+    // Debug feature: Regenerate food when 'f' is pressed
+    if (myGM->getInput() == 'f') {
+        MacUILib_printf("Debug: Food regeneration triggered.\n");
+        myGM->generateFood(myPlayer->getPlayerPos());
+        myGM->clearInput(); // Clear input after processing
+    }
 }
 
 void RunLogic(void)
@@ -106,9 +110,10 @@ void DrawScreen(void)
     int playerx = playerPos.pos -> x;
     int playery = playerPos.pos -> y;
 
+    // GET FOOD POSITION
+    objPos foodPos = myGM -> getFoodPos();
 
-    // TEST TO WORK FRAME AND PRINT:
-    // border x must be wider than border y to work 
+    // PRINT
     for (int i = 0; i < boardY; i++)
     {
         for (int j = 0; j < boardX; j++)
@@ -116,45 +121,46 @@ void DrawScreen(void)
             if (i == 0 || i == (boardY - 1))
             { 
                 // Top/Bottom borders
-                MacUILib_printf("#");
+                MacUILib_printf("%c",'#');
             } 
             else if (j == 0 || j == (boardX - 1))
             { 
                 // Side borders
-                MacUILib_printf("#");
+                MacUILib_printf("%c",'#');
             } 
             else if(i == playery && j == playerx)
             {
                 // Print Player symbol on board
                 MacUILib_printf("%c", playerPos.symbol); 
             } 
+            //else if(i == foodPos.pos -> x && j == foodPos.pos -> y)
+            else if (i == foodPos.pos->y && j == foodPos.pos->x)
+            {  
+                // Draw the food char where food coord are
+                // also he has i == foodPos.pos -> y idk why 
+                MacUILib_printf("%c", foodPos.symbol);
+            }
             else
             {
-                MacUILib_printf(" ");
+                MacUILib_printf("%c",' ') ;
             }
         }
         MacUILib_printf("%c",'\n');
     }
 
-    // if(myGM -> getInput() == 't')
-    // {
-    //     //doesn't work
-    //     myGM-> incrementScore();
-    //     MacUILib_printf("The score is: %d\n", score);
-    // }
-
-    // need to check if score increments 
-    // need to check if it matches ppas 
 
     // PRINT STATEMENTS FOR GAME PLAY
     MacUILib_printf("\tGameplay Instructions: \n");
     MacUILib_printf("Press the escape key or space bar to quit.\n\tUse WASD to move.\n");
     MacUILib_printf("Score: %d\n", score);
 
+    MacUILib_printf("Press 'f' to randomly change food postion\n");
+
     // Debug: Print player postion 
     //objPos playerPos = myPlayer -> getPlayerPos();
     MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
 
+    // DON'T THINK THIS IS RIGHT TBH
     if(myGM -> getExitFlagStatus() == true)
     {
         MacUILib_clearScreen();
@@ -180,9 +186,10 @@ void CleanUp(void)
     }
     else 
     {
-        MacUILib_printf("You've exited the game!\n");
+        MacUILib_printf("Player has exited the game!\n");
     }
 
+    // Delete items on the heap
     delete myPlayer; 
     delete myGM;
 

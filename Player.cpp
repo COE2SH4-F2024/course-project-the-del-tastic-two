@@ -42,11 +42,13 @@ objPos Player::getPlayerPos() const
 void Player::updatePlayerDir()
 {
     // PPA3 input processing logic
+    char input = mainGameMechsRef->getInput();
+    mainGameMechsRef-> clearInput();
 
-    if(mainGameMechsRef->getInput() != 0)  // if not null character
+    if(input != 0)  // if not null character
     {
         //MacUILib_printf("Input received: %c\n", mainGameMechsRef->getInput());
-        switch(mainGameMechsRef->getInput())
+        switch(input)
         {                      
             case ' ':   // Exit if space bar is pressed
             case 27:    // Exit if ESC is pressed
@@ -76,7 +78,7 @@ void Player::updatePlayerDir()
                     playerDir = RIGHT;
                 }
                 break;
-
+                
             default:
                 break;
         }

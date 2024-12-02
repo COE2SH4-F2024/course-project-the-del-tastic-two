@@ -28,7 +28,7 @@ objPos::objPos(int xPos, int yPos, char sym)
 // start of my work: 
 
 // Copy Contructor 
-objPos::objPos( const objPos &obj)
+objPos::objPos( const objPos &thisPos)
 {
     //do a deep copy here 
 
@@ -38,16 +38,16 @@ objPos::objPos( const objPos &obj)
     // this->symbol = obj.symbol;
     
     pos = new Pos;      //allocated memory
-    pos->x = obj.pos->x;
-    pos->y = obj.pos->y;
-    symbol = obj.symbol;
+    pos->x = thisPos.pos->x;
+    pos->y = thisPos.pos->y;
+    symbol = thisPos.symbol;
 
     //cout << "Copy Contructor in objPos reached" << endl; 
     //check if reached 
 }
 
 // Copy Assignment Operator 
-objPos& objPos::operator=(const objPos &other)
+objPos& objPos::operator=(const objPos &thisPos)
 {
     // if (this == &other) // Self-assignment check
     // {
@@ -62,13 +62,12 @@ objPos& objPos::operator=(const objPos &other)
     // symbol = other.symbol; // Directly copy the symbol field
     cout << "copy assignment operator reached" << endl;
 
-
-    if(this != &other)
+    if(this != &thisPos)
     {
         pos = new Pos;
-        pos->x = other.pos->x;
-        pos->y = other.pos->y;
-        symbol = other.symbol;
+        pos->x = thisPos.pos->x;
+        pos->y = thisPos.pos->y;
+        symbol = thisPos.symbol;
         // check if this new version works
     }
     return *this;

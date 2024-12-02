@@ -26,9 +26,8 @@ class objPos
         // [TODO] Implement the missing special member functions to meet the minimum four rule
 
 
-        objPos( const objPos &obj);             //copy constructor
-        objPos& operator=(const objPos& other); //copy assignment operator 
-        //objPos operator=(const objPos& other);  //copy assignment operator 
+        objPos( const objPos &thisPos);             //copy constructor
+        objPos& operator=(const objPos& thisPos); //copy assignment operator 
         ~objPos();                              //destrucor
 
         void setObjPos(objPos o);        
