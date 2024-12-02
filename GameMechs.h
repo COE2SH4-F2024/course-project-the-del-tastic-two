@@ -22,16 +22,12 @@ class GameMechs
 
         objPos food;
         objPos player; //added 
-
-        //potentially delete, not important currently:
-        int minSpeed;
-        int maxSpeed; 
-        int playerSpeed;  //for current speed
     
     public:
         GameMechs();
         GameMechs(int boardX, int boardY);
         ~GameMechs(); // is this one needed at all? Why or why not?
+
             //should be needed if we assign new to any, or alloacate to the heap
             //if not, a default constructor is called
             //or if we need to adhere to the rule of six, minimum four
@@ -58,20 +54,11 @@ class GameMechs
 
         // Method 1 (above and beyond approach NOT taken)
 
-        void generateFood(objPos blockOff);
+        void generateFood(objPosArrayList *blockOff);
         //don't want to create food where player object is
 
         objPos getFoodPos() const;  //getter
                                     //will return objPos type
-
-
-        //Change the speed
-        // int getMaxSpeed() const;
-        // int getMinSpeed() const;
-        // int getPlayerSpeed() const;
-
-        // void increaseSpeed();
-        // void decreaseSpeed();
 
 };
 

@@ -2,6 +2,7 @@
 #include "MacUILib.h"
 #include "objPos.h"
 #include "GameMechs.h"
+#include "objPosArrayList.h"
 
 Player::Player(GameMechs* thisGMRef)
 {
@@ -10,33 +11,24 @@ Player::Player(GameMechs* thisGMRef)
 
     // more actions to be included
 
-    //currentSpeed = 100000;
+    playerPosList = new objPosArrayList();  
 
-    playerPos.pos = new Pos(); // DELETE 
+    int board_X = mainGameMechsRef -> getBoardSizeX();
+    int board_Y = mainGameMechsRef -> getBoardSizeY();
 
-    playerPos.pos->x = (mainGameMechsRef -> getBoardSizeX() / 2);
-    playerPos.pos->y = (mainGameMechsRef -> getBoardSizeY() /2);
-    playerPos.symbol = '*'; // Initialize symbol
+    playerPosList -> insertHead(objPos(board_X /2, board_Y/2, '*'));
+
 }
 
 
 Player::~Player()
 {
-    // delete any heap members here
-    // no keyword 'new' in the constructor 
-    // leave destructor empty FOR NOW 
-
-    //delete Pos(); dunno about this 
+    delete playerPosList;
 }
 
-objPos Player::getPlayerPos() const
+objPosArrayList *Player::getPlayerPosList() const
 {
-    // return the reference to the playerPos arrray list
-    
-    return playerPos; 
-
-    //return the object playerPos type through value (check or delete comment)
-    //only can do this if you've implemented the rule of four
+    return playerPosList;
 }
 
 void Player::updatePlayerDir()
@@ -47,6 +39,7 @@ void Player::updatePlayerDir()
 
     if(input != 0)  // if not null character
     {
+
         //MacUILib_printf("Input received: %c\n", mainGameMechsRef->getInput());
         switch(input)
         {                      
@@ -86,43 +79,6 @@ void Player::updatePlayerDir()
     }
 }
 
-//player speed 
-// int Player::playerSpeed()
-// {
-    
-//     if(mainGameMechsRef->getInput() != 0)  // if not null character
-//     {
-//         switch(mainGameMechsRef->getInput())
-//         {                      
-//             //player speed controller 
-//             case '1':
-//                 currentSpeed = 1000000;
-//                 //outputSpeed = "Very Slow";
-//                 break;
-//             case '2':
-//                 currentSpeed = 500000;
-//                 //outputSpeed = "Slow";
-//                 break;
-//             case '3':
-//                 currentSpeed = 100000;
-//                 //outputSpeed = "Regular";
-//                 break;
-//             case '4':
-//                 currentSpeed = 10000;
-//                 //outputSpeed = "Fast";
-//                 break;
-//             case '5':
-//                 currentSpeed = 2500;
-//                 //outputSpeed = "Very Fast";
-//                 break;
-
-//             default:
-//                 break;
-//         }
-//         mainGameMechsRef->clearInput();
-//     }
-// }
-
 
 void Player::movePlayer()
 {
@@ -132,34 +88,97 @@ void Player::movePlayer()
     int board_X = mainGameMechsRef->getBoardSizeX();
     int board_Y = mainGameMechsRef->getBoardSizeY();
 
+    objPos newHead = playerPosList -> getHeadElement();
+
     switch(playerDir)
     {
         case STOP:
             break;
         case UP:
-            playerPos.pos->y--;
+            newHead.pos->y--;
             break;
         case LEFT:
-            playerPos.pos->x--;
+            newHead.pos->x--;
             break;
         case DOWN:
-            playerPos.pos->y++;
+            newHead.pos->y++;
             break;
         case RIGHT:
-            playerPos.pos->x++;
+            newHead.pos->x++;
             break;
     }
 
     // Border wraparound
     //if the postion reaches a border, switch the postion to the other end
-    if (playerPos.pos->x < 0) playerPos.pos->x = (board_X -1);    // Wrap horizontally
-    if (playerPos.pos->x > (board_X - 1)) playerPos.pos->x = 0;
-    if (playerPos.pos->y < 0) playerPos.pos->y = (board_Y -1);     // Wrap vertically
-    if (playerPos.pos->y > (board_Y - 1)) playerPos.pos->y = 0;
+    if (newHead.pos->x < 0) newHead.pos->x = (board_X -1);    // Wrap horizontally
+    if (newHead.pos->x > (board_X - 1)) newHead.pos->x = 0;
+    if (newHead.pos->y < 0) newHead.pos->y = (board_Y -1);     // Wrap vertically
+    if (newHead.pos->y > (board_Y - 1)) newHead.pos->y = 0;
     
-    //MacUILib_printf("Debug: New Player Position: [x: %d, y: %d]\n", playerPos.pos->x, playerPos.pos->y);
+    //move snake body around:
+
+    objPos foodPos = mainGameMechsRef->getFoodPos();
+        
+    if ((newHead.pos->x == foodPos.pos->x) && (newHead.pos->y == foodPos.pos->y))
+    {
+        // Snake eats food: Add a new head (no tail removal here)
+        mainGameMechsRef->generateFood(playerPosList); // Regenerate food
+        playerPosList->insertHead(newHead);  // Insert the new head at the front
+        mainGameMechsRef->incrementScore();
+    }
+    else
+    {
+        // No food eaten: Add the new head and remove the tail
+        playerPosList->insertHead(newHead);
+        playerPosList->removeTail();
+    }
 
 }
 
 // More methods to be added
 
+// void Player::growSnake()
+// {
+//     //delete this if not used in project.cpp!!
+
+
+//     objPos foodPos = mainGameMechsRef->getFoodPos();
+
+//     objPos newHead = playerPosList -> getHeadElement();
+
+    
+    
+//     if ((newHead.pos->x == foodPos.pos->x) && (newHead.pos->y == foodPos.pos->y))
+//     {
+//         // Snake eats food: Add a new head (no tail removal here)
+//         mainGameMechsRef->generateFood(playerPosList); // Regenerate food
+//         playerPosList->insertHead(newHead);  // Insert the new head at the front
+//         mainGameMechsRef->incrementScore();
+//     }
+//     else
+//     {
+//         // No food eaten: Add the new head and remove the tail
+//         playerPosList->insertHead(newHead);
+//         playerPosList->removeTail();
+//     }
+// }
+
+
+bool Player::selfCollisionCheck()
+{
+    objPos newHead = playerPosList -> getHeadElement();
+
+    for(int i = 1; i < playerPosList-> getSize(); i++)
+    {
+        objPos limb = playerPosList -> getElement(i);
+
+        if(newHead.pos -> x == limb.pos -> x && newHead.pos ->  y == limb.pos -> y)
+        {
+            return true;
+        }
+
+        
+    }
+    
+    return false;
+}

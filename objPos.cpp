@@ -1,5 +1,6 @@
 #include "objPos.h"
 
+//potentially delete this
 #include <iostream> 
 using namespace std; //do i need this 
 
@@ -41,9 +42,6 @@ objPos::objPos( const objPos &thisPos)
     pos->x = thisPos.pos->x;
     pos->y = thisPos.pos->y;
     symbol = thisPos.symbol;
-
-    //cout << "Copy Contructor in objPos reached" << endl; 
-    //check if reached 
 }
 
 // Copy Assignment Operator 
@@ -60,7 +58,6 @@ objPos& objPos::operator=(const objPos &thisPos)
     // // Allocate new resources and copy data from `other`
     // pos = new Pos(*other.pos); // Use copy constructor of `Pos`
     // symbol = other.symbol; // Directly copy the symbol field
-    cout << "copy assignment operator reached" << endl;
 
     if(this != &thisPos)
     {
@@ -77,9 +74,6 @@ objPos& objPos::operator=(const objPos &thisPos)
 objPos::~objPos()
 {
     delete pos;     //clean any dynamically allocated memory 
-    
-    //delete refPos; 
-    // do we need to delete anything else???
 }
 
 // end of my work for rule of six/min four 

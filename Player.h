@@ -1,4 +1,5 @@
-#ifndef PLAYER_H
+ 
+ #ifndef PLAYER_H
 #define PLAYER_H
 
 #include "GameMechs.h"
@@ -20,17 +21,23 @@ class Player
         Player(GameMechs* thisGMRef);
         ~Player();
 
-        objPos getPlayerPos() const; // Upgrade this in iteration 3.       
+        objPosArrayList *getPlayerPosList() const; // Upgraded 
         void updatePlayerDir();
         void movePlayer();
 
         // More methods to be added here
 
+        void growSnake();
+
+        bool selfCollisionCheck();
+
         //int currentSpeed;
         //int playerSpeed();
 
     private:
-        objPos playerPos; // Upgrade this in iteration 3.       
+        //objPos playerPos; // Upgrade this in iteration 3. 
+
+        objPosArrayList* playerPosList; //upgraded
         enum Dir playerDir;
 
         // Need a reference to the Main Game Mechanisms

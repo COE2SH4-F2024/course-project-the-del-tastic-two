@@ -12,6 +12,7 @@ using namespace std;
 Player *myPlayer; //Global pointer meant to instantiate a player object on the heap
 GameMechs *myGM; // Container class (on the heap)
 
+bool collision;
 
 void Initialize(void);
 void GetInput(void);
@@ -47,25 +48,28 @@ void Initialize(void)
     MacUILib_clearScreen();
 
     myGM = new GameMechs();
+    //myPlayer = new Player(myGM);
+
     myPlayer = new Player(myGM);
 
     // first call the foodGeneration function to initially populate it
-    myGM->generateFood(myPlayer->getPlayerPos());
-    //should i be doing this as, it sets it to a random position,
-        //but it doesn't start off screen? 
-        //should it be tooggled by a button??
+    myGM->generateFood(myPlayer->getPlayerPosList());
 
+    collision = false;
 }
 
 void GetInput(void)
 {
     myGM -> getAsyncInput();
 
+    char input = myGM->getInput();
+    MacUILib_printf("Debug: Captured Input: %c\n", input);
+
     // works !
     // Debug feature: Regenerate food when 'f' is pressed
     if (myGM->getInput() == 'f') {
         MacUILib_printf("Debug: Food regeneration triggered.\n");
-        myGM->generateFood(myPlayer->getPlayerPos());
+        myGM->generateFood(myPlayer->getPlayerPosList());
         myGM->clearInput(); // Clear input after processing
     }
 }
@@ -75,23 +79,26 @@ void RunLogic(void)
     //char input = myGM->getInput();
     //MacUILib_printf("Debug: Input in RunLogic: %c", input);
 
+ 
+
     myPlayer->updatePlayerDir();
     myPlayer->movePlayer(); 
+    myPlayer -> selfCollisionCheck();
 
-    //following logic in player file for speed
-    //myPlayer->playerSpeed(); 
+    collision = myPlayer -> selfCollisionCheck();
+    if(collision == true)
+    {
+        myGM -> setLoseFlag();
+        myGM -> setExitTrue();
+    }
+
+
+    //myPlayer->growSnake();
     
-    // Adjust player speed
-    //these still aren't working, but can ignore for now
-    // if (input == '+') {
-    //     myGM->increaseSpeed();
-    //     MacUILib_printf("Debug: Player speed increased to %d.\n", myGM->getPlayerSpeed());
-    // } else if (input == '-') {
-    //     myGM->decreaseSpeed();
-    //     MacUILib_printf("Debug: Player speed decreased to %d.\n", myGM->getPlayerSpeed());
-    // }
+
     
 }
+
 
 void DrawScreen(void)
 {
@@ -104,48 +111,60 @@ void DrawScreen(void)
     // GET SCORE
     int score = myGM -> getScore();
 
+
+
     // GET PLAYER X and Y HERE
-    objPos playerPos = myPlayer->getPlayerPos();
+    // objPos playerPosArrayList = myPlayer->getPlayerPosList();
 
-    int playerx = playerPos.pos -> x;
-    int playery = playerPos.pos -> y;
+    // int playerx = playerPosArrayList.pos -> x;
+    // int playery = playerPosArrayList.pos -> y;
 
-    // GET FOOD POSITION
+    // // GET FOOD POSITION
     objPos foodPos = myGM -> getFoodPos();
 
-    // PRINT
-    for (int i = 0; i < boardY; i++)
+    //attempt 3:
+        // PRINT
+    for (int x = 0; x < boardY; x++)
     {
-        for (int j = 0; j < boardX; j++)
+        for (int y = 0; y < boardX; y++)
         {
-            if (i == 0 || i == (boardY - 1))
+            if (x == 0 || x == (boardY - 1) || y == 0 || y == (boardX - 1))
             { 
-                // Top/Bottom borders
-                MacUILib_printf("%c",'#');
-            } 
-            else if (j == 0 || j == (boardX - 1))
-            { 
-                // Side borders
-                MacUILib_printf("%c",'#');
-            } 
-            else if(i == playery && j == playerx)
-            {
-                // Print Player symbol on board
-                MacUILib_printf("%c", playerPos.symbol); 
-            } 
-            //else if(i == foodPos.pos -> x && j == foodPos.pos -> y)
-            else if (i == foodPos.pos->y && j == foodPos.pos->x)
-            {  
-                // Draw the food char where food coord are
-                // also he has i == foodPos.pos -> y idk why 
-                MacUILib_printf("%c", foodPos.symbol);
+                // Borders
+                MacUILib_printf("%c", '#');
             }
             else
             {
-                MacUILib_printf("%c",' ') ;
+                bool playerPrinted = false;
+
+                // Check if the current position is occupied by any part of the player
+                for (int k = 0; k < myPlayer->getPlayerPosList()->getSize(); k++)
+                {
+                    objPos playerBody = myPlayer->getPlayerPosList()->getElement(k);
+
+                    if (playerBody.pos->x == y && playerBody.pos->y == x)
+                    {
+                        MacUILib_printf("%c", playerBody.symbol);
+                        playerPrinted = true;
+                        break;
+                    }
+                }
+
+                // Check if the current position is occupied by the food
+                if (!playerPrinted)
+                {
+                    if (foodPos.pos->x == y && foodPos.pos->y == x)
+                    {
+                        MacUILib_printf("%c", foodPos.symbol);
+                    }
+                    else
+                    {
+                        MacUILib_printf("%c", ' ');
+                    }
+                }
             }
         }
-        MacUILib_printf("%c",'\n');
+        MacUILib_printf("%c", '\n');
     }
 
 
@@ -158,7 +177,8 @@ void DrawScreen(void)
 
     // Debug: Print player postion 
     //objPos playerPos = myPlayer -> getPlayerPos();
-    MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
+    
+    //MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
 
     // DON'T THINK THIS IS RIGHT TBH
     if(myGM -> getExitFlagStatus() == true)
@@ -181,7 +201,7 @@ void CleanUp(void)
     
     if(myGM -> getLoseFlagStatus() == true)
     {
-        MacUILib_printf("\n Thanks for playing!\n");
+        MacUILib_printf("\n Thanks for playing! You lost\n");
         MacUILib_printf("Final score was: %d\n", myGM -> getScore());
     }
     else 
