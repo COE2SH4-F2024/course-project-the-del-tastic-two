@@ -1,16 +1,16 @@
 #ifndef OBJPOS_ARRAYLIST_H
 #define OBJPOS_ARRAYLIST_H
 
-#define ARRAY_MAX_CAP 200
+#define ARRAY_MAX_CAP 200 //max capacity of array
 
 #include "objPos.h"
  
 class objPosArrayList
 {
     private:
-        objPos* aList;
-        int listSize;       
-        int arrayCapacity;  
+        objPos* aList; //pointer to dynamic array of objPos elements
+        int listSize;  //current number of elements in list
+        int arrayCapacity;  //max capcity of the list
 
     public:
         objPosArrayList();  // Default constructor

@@ -10,25 +10,24 @@ Player::Player(GameMechs* thisGMRef)
     playerDir = STOP;
 
     // more actions to be included
-
+    //initialize players position list initial position
     playerPosList = new objPosArrayList();  
 
     int board_X = mainGameMechsRef -> getBoardSizeX();
     int board_Y = mainGameMechsRef -> getBoardSizeY();
 
+    //Place player at the center of board
     playerPosList -> insertHead(objPos(board_X /2, board_Y/2, '*'));
-
 }
-
 
 Player::~Player()
 {
-    delete playerPosList;
+    delete playerPosList; //clean up dynamically allocated memory
 }
 
 objPosArrayList *Player::getPlayerPosList() const
 {
-    return playerPosList;
+    return playerPosList; //return list of player positions
 }
 
 void Player::updatePlayerDir()
@@ -39,8 +38,6 @@ void Player::updatePlayerDir()
 
     if(input != 0)  // if not null character
     {
-
-        //MacUILib_printf("Input received: %c\n", mainGameMechsRef->getInput());
         switch(input)
         {                      
             case ' ':   // Exit if space bar is pressed
@@ -75,21 +72,21 @@ void Player::updatePlayerDir()
             default:
                 break;
         }
-        mainGameMechsRef->clearInput();
+        mainGameMechsRef->clearInput(); //clear input after proccessing
     }
 }
-
 
 void Player::movePlayer()
 {
     // PPA3 Finite State Machine logic
 
-    //shorten access for boundary checking:
+    //Board dimensions
     int board_X = mainGameMechsRef->getBoardSizeX();
     int board_Y = mainGameMechsRef->getBoardSizeY();
 
     objPos newHead = playerPosList -> getHeadElement();
 
+    //move player in specific direction
     switch(playerDir)
     {
         case STOP:
@@ -110,75 +107,50 @@ void Player::movePlayer()
 
     // Border wraparound
     //if the postion reaches a border, switch the postion to the other end
-    if (newHead.pos->x < 0) newHead.pos->x = (board_X -1);    // Wrap horizontally
-    if (newHead.pos->x > (board_X - 1)) newHead.pos->x = 0;
-    if (newHead.pos->y < 0) newHead.pos->y = (board_Y -1);     // Wrap vertically
-    if (newHead.pos->y > (board_Y - 1)) newHead.pos->y = 0;
-    
-    //move snake body around:
+    if (newHead.pos->x < 1) 
+        newHead.pos->x = (board_X -2);    // Wrap horizontally
+
+    if (newHead.pos->x > (board_X - 1)) 
+        newHead.pos->x = 1;
+
+    if (newHead.pos->y < 1)
+        newHead.pos->y = (board_Y -2);     // Wrap vertically
+
+    if (newHead.pos->y > (board_Y - 1))
+        newHead.pos->y = 2;
+
 
     objPos foodPos = mainGameMechsRef->getFoodPos();
         
     if ((newHead.pos->x == foodPos.pos->x) && (newHead.pos->y == foodPos.pos->y))
     {
-        // Snake eats food: Add a new head (no tail removal here)
+        // Snake eats food: Add a new head
         mainGameMechsRef->generateFood(playerPosList); // Regenerate food
         playerPosList->insertHead(newHead);  // Insert the new head at the front
         mainGameMechsRef->incrementScore();
     }
     else
     {
-        // No food eaten: Add the new head and remove the tail
+        //No food eaten; Add the new head and remove the tail
         playerPosList->insertHead(newHead);
         playerPosList->removeTail();
     }
-
 }
 
-// More methods to be added
-
-// void Player::growSnake()
-// {
-//     //delete this if not used in project.cpp!!
-
-
-//     objPos foodPos = mainGameMechsRef->getFoodPos();
-
-//     objPos newHead = playerPosList -> getHeadElement();
-
-    
-    
-//     if ((newHead.pos->x == foodPos.pos->x) && (newHead.pos->y == foodPos.pos->y))
-//     {
-//         // Snake eats food: Add a new head (no tail removal here)
-//         mainGameMechsRef->generateFood(playerPosList); // Regenerate food
-//         playerPosList->insertHead(newHead);  // Insert the new head at the front
-//         mainGameMechsRef->incrementScore();
-//     }
-//     else
-//     {
-//         // No food eaten: Add the new head and remove the tail
-//         playerPosList->insertHead(newHead);
-//         playerPosList->removeTail();
-//     }
-// }
-
-
+//check for self collision
 bool Player::selfCollisionCheck()
 {
     objPos newHead = playerPosList -> getHeadElement();
 
+    //Check if head position colides with body
     for(int i = 1; i < playerPosList-> getSize(); i++)
     {
         objPos limb = playerPosList -> getElement(i);
 
         if(newHead.pos -> x == limb.pos -> x && newHead.pos ->  y == limb.pos -> y)
         {
-            return true;
-        }
-
-        
-    }
-    
-    return false;
+            return true; //collision detected
+        }   
+    } 
+    return false; //No collision
 }

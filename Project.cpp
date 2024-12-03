@@ -1,11 +1,7 @@
-
-#include <iostream>
 #include "MacUILib.h"
 #include "objPos.h"
 #include "GameMechs.h" 
 #include "Player.h"
-
-using namespace std;
 
 #define DELAY_CONST 100000
 
@@ -21,14 +17,12 @@ void DrawScreen(void);
 void LoopDelay(void);
 void CleanUp(void);
 
-
-
 int main(void)
 {
 
     Initialize();
 
-    //while(myGM -> getExitFlagStatus() == false) //ignore
+    //Game loop runs until exit flag is set
     while(!myGM -> getExitFlagStatus()) //while it's not true
     {
         GetInput();
@@ -47,62 +41,43 @@ void Initialize(void)
     MacUILib_init();
     MacUILib_clearScreen();
 
+    //create game objects
     myGM = new GameMechs();
-    //myPlayer = new Player(myGM);
-
     myPlayer = new Player(myGM);
 
-    // first call the foodGeneration function to initially populate it
+    //Generate food initially  
     myGM->generateFood(myPlayer->getPlayerPosList());
 
+    //Initialize collision to false
     collision = false;
 }
 
 void GetInput(void)
 {
+    //Take in input
     myGM -> getAsyncInput();
-
-    char input = myGM->getInput();
-    MacUILib_printf("Debug: Captured Input: %c\n", input);
-
-    // works !
-    // Debug feature: Regenerate food when 'f' is pressed
-    if (myGM->getInput() == 'f') {
-        MacUILib_printf("Debug: Food regeneration triggered.\n");
-        myGM->generateFood(myPlayer->getPlayerPosList());
-        myGM->clearInput(); // Clear input after processing
-    }
 }
 
 void RunLogic(void)
 {
-    //char input = myGM->getInput();
-    //MacUILib_printf("Debug: Input in RunLogic: %c", input);
-
- 
-
-    myPlayer->updatePlayerDir();
-    myPlayer->movePlayer(); 
-    myPlayer -> selfCollisionCheck();
+    myPlayer->updatePlayerDir(); //update player direction
+    myPlayer->movePlayer();  //move player
+    myPlayer -> selfCollisionCheck(); //check for self-collision
 
     collision = myPlayer -> selfCollisionCheck();
+
+    //If collision occurs, end the game
     if(collision == true)
     {
         myGM -> setLoseFlag();
         myGM -> setExitTrue();
     }
-
-
-    //myPlayer->growSnake();
-    
-
-    
 }
 
 
 void DrawScreen(void)
 {
-    MacUILib_clearScreen();    
+    MacUILib_clearScreen();    //clear screen
 
     // GET BOARDSIZE
     int boardX = myGM -> getBoardSizeX();
@@ -111,19 +86,10 @@ void DrawScreen(void)
     // GET SCORE
     int score = myGM -> getScore();
 
-
-
-    // GET PLAYER X and Y HERE
-    // objPos playerPosArrayList = myPlayer->getPlayerPosList();
-
-    // int playerx = playerPosArrayList.pos -> x;
-    // int playery = playerPosArrayList.pos -> y;
-
     // // GET FOOD POSITION
     objPos foodPos = myGM -> getFoodPos();
 
-    //attempt 3:
-        // PRINT
+    //Print Board
     for (int x = 0; x < boardY; x++)
     {
         for (int y = 0; y < boardX; y++)
@@ -144,7 +110,7 @@ void DrawScreen(void)
 
                     if (playerBody.pos->x == y && playerBody.pos->y == x)
                     {
-                        MacUILib_printf("%c", playerBody.symbol);
+                        MacUILib_printf("%c", playerBody.symbol); //print snakecharacter
                         playerPrinted = true;
                         break;
                     }
@@ -153,12 +119,14 @@ void DrawScreen(void)
                 // Check if the current position is occupied by the food
                 if (!playerPrinted)
                 {
-                    if (foodPos.pos->x == y && foodPos.pos->y == x)
+                    
+                    if (foodPos.pos->x == y && foodPos.pos->y == x) //checks food x and y coords
                     {
-                        MacUILib_printf("%c", foodPos.symbol);
+                        MacUILib_printf("%c", foodPos.symbol); //print food symbols
                     }
                     else
                     {
+                        //print empty space
                         MacUILib_printf("%c", ' ');
                     }
                 }
@@ -167,51 +135,38 @@ void DrawScreen(void)
         MacUILib_printf("%c", '\n');
     }
 
-
     // PRINT STATEMENTS FOR GAME PLAY
     MacUILib_printf("\tGameplay Instructions: \n");
-    MacUILib_printf("Press the escape key or space bar to quit.\n\tUse WASD to move.\n");
-    MacUILib_printf("Score: %d\n", score);
-
-    MacUILib_printf("Press 'f' to randomly change food postion\n");
-
-    // Debug: Print player postion 
-    //objPos playerPos = myPlayer -> getPlayerPos();
-    
-    //MacUILib_printf("Player [x, y, sym] = [%d, %d, %c]\n", playerPos.pos -> x, playerPos.pos -> y, playerPos.symbol);
-
-    // DON'T THINK THIS IS RIGHT TBH
-    if(myGM -> getExitFlagStatus() == true)
-    {
-        MacUILib_clearScreen();
-        MacUILib_printf("The Game is Forcefully Exited\n");
-    }
+    MacUILib_printf("Press the escape key or space bar to quit.\nUse WASD to move.\n");
+    MacUILib_printf("Score: %d\n", score);  
 }
 
 void LoopDelay(void)
 {
     MacUILib_Delay(DELAY_CONST); // 0.1s delay
-    //MacUILib_Delay(myPlayer->playerSpeed()); // control the speed yourself
 }
 
 
 void CleanUp(void)
 {
-    MacUILib_clearScreen();   
-    
+    MacUILib_clearScreen();   //clear screen
+
+    // Display end game message based on outcome
     if(myGM -> getLoseFlagStatus() == true)
     {
-        MacUILib_printf("\n Thanks for playing! You lost\n");
-        MacUILib_printf("Final score was: %d\n", myGM -> getScore());
+        //Message when user self collides
+        MacUILib_printf("Thanks for playing! You lost\n");
+        MacUILib_printf("Final core was: %d\n", myGM -> getScore());
     }
     else 
     {
-        MacUILib_printf("Player has exited the game!\n");
+        //Message when user manually exits
+        MacUILib_printf("Player Exited the Game!\n");
     }
 
     // Delete items on the heap
     delete myPlayer; 
     delete myGM;
 
-    MacUILib_uninit();
+    MacUILib_uninit(); //Uninitialize UI library
 }

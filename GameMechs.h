@@ -11,6 +11,7 @@ using namespace std;
 
 class GameMechs
 {
+    //define private
     private:
         char input;
         bool exitFlag;
@@ -23,14 +24,11 @@ class GameMechs
         objPos food;
         objPos player; //added 
     
+    //define public
     public:
         GameMechs();
         GameMechs(int boardX, int boardY);
         ~GameMechs(); // is this one needed at all? Why or why not?
-
-            //should be needed if we assign new to any, or alloacate to the heap
-            //if not, a default constructor is called
-            //or if we need to adhere to the rule of six, minimum four
         
         bool getExitFlagStatus() const; 
         void setExitTrue();
@@ -50,15 +48,11 @@ class GameMechs
         // More methods should be added here
 
         void getAsyncInput();
-        //void generateFood();
+        
 
         // Method 1 (above and beyond approach NOT taken)
-
         void generateFood(objPosArrayList *blockOff);
-        //don't want to create food where player object is
-
-        objPos getFoodPos() const;  //getter
-                                    //will return objPos type
+        objPos getFoodPos() const;  
 
 };
 

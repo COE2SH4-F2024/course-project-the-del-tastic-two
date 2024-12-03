@@ -1,5 +1,5 @@
  
- #ifndef PLAYER_H
+#ifndef PLAYER_H
 #define PLAYER_H
 
 #include "GameMechs.h"
@@ -16,7 +16,7 @@ class Player
 
     
     public:
-        enum Dir {UP, DOWN, LEFT, RIGHT, STOP};  // This is the direction state
+        enum Dir {UP, DOWN, LEFT, RIGHT, STOP};  // Player direction state
 
         Player(GameMechs* thisGMRef);
         ~Player();
@@ -25,17 +25,9 @@ class Player
         void updatePlayerDir();
         void movePlayer();
 
-        // More methods to be added here
-
-        void growSnake();
-
         bool selfCollisionCheck();
 
-        //int currentSpeed;
-        //int playerSpeed();
-
     private:
-        //objPos playerPos; // Upgrade this in iteration 3. 
 
         objPosArrayList* playerPosList; //upgraded
         enum Dir playerDir;

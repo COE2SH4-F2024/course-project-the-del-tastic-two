@@ -1,9 +1,6 @@
 #ifndef OBJPOS_H
 #define OBJPOS_H
 
-//do i need namespace??
-using namespace std;
-
 // Not really a C++ thing
 typedef struct 
 {
@@ -27,8 +24,8 @@ class objPos
 
 
         objPos( const objPos &thisPos);             //copy constructor
-        objPos& operator=(const objPos& thisPos); //copy assignment operator 
-        ~objPos();                              //destrucor
+        objPos& operator=(const objPos& thisPos);   //copy assignment operator 
+        ~objPos();                                  //destrucor
 
         void setObjPos(objPos o);        
         void setObjPos(int xPos, int yPos, char sym);  

@@ -6,6 +6,7 @@
 
 #include "objPosArrayList.h"
 
+//Constructor
 GameMechs::GameMechs()
 {
 
@@ -17,13 +18,12 @@ GameMechs::GameMechs()
     boardSizeX = 30;
     boardSizeY = 15;
 
-    food.pos = new Pos(); // In GameMechs constructor
+    food.pos = new Pos(); // Initialize food object
 
-    food.setObjPos(-10, -10, 'o'); 
-    //initialize food object outside of the game board 
-
+    food.setObjPos(-10, -10, 'o'); //initialize food object outside of the game board 
 }
 
+// Constructor with custom board size
 GameMechs::GameMechs(int boardX, int boardY)
 {
     input = 0;
@@ -32,72 +32,81 @@ GameMechs::GameMechs(int boardX, int boardY)
     boardSizeY = boardY;
 }
 
+// Destructor
 GameMechs::~GameMechs()
 {
     delete food.pos;
 }
 
+// Getter for exit flag status
 bool GameMechs::getExitFlagStatus() const
 {
     return exitFlag;
 }
 
+// Getter for lose flag status
 bool GameMechs::getLoseFlagStatus() const
 {
     return loseFlag;
 }
-    
+
+// Getter for user input  
 char GameMechs::getInput()
 {
     return input; 
 }
 
+// Getter for current score
 int GameMechs::getScore() const
 {
     return score;
 }
 
+// Increment score by 1
 void GameMechs::incrementScore()
 {
     score++;
 }
 
+// Getter for board width (X)
 int GameMechs::getBoardSizeX() const
 {
     return boardSizeX;
 }
 
+// Getter for board height (Y)
 int GameMechs::getBoardSizeY() const
 {
     return boardSizeY;
 }
 
-
+// Set exit flag to true
 void GameMechs::setExitTrue()
 {
     exitFlag = true;
 }
 
+// Set lose flag to true
 void GameMechs::setLoseFlag()
 {
-    loseFlag = true; 
-    //if true, player has lost the game
+    loseFlag = true;  //if true, player has lost the game
 }
+   
 
+// Manually set input character
 void GameMechs::setInput(char this_input)
 {
-    input = this_input;
-    //manually setting the input if necessary
+    input = this_input; //manually setting the input if necessary
 }
 
+// Clear input
 void GameMechs::clearInput()
 {
     input = 0;
     //reset the input to null
 }
 
-// More methods should be added here
-
+// Asynchronously check and fetch user input
 void GameMechs::getAsyncInput()
 {   
     if(MacUILib_hasChar() != 0)
@@ -107,7 +116,6 @@ void GameMechs::getAsyncInput()
 }
 
 // FOOD GENERATION
-
 void GameMechs::generateFood(objPosArrayList* blockOff)
 {
     srand(time(NULL)); // Seed random generator
